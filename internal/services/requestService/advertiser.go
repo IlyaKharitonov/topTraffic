@@ -31,7 +31,7 @@ func (as *advertiserService)Request(ctx context.Context, request *entities.Reque
 		response = &entities.Response{ID: request.ID, Imp: []entities.Imp{}}
 		wg = &sync.WaitGroup{}
 		ctxWithTimeout, cansel = context.WithTimeout(ctx, time.Millisecond*200)
-		cli = &http.Client{Timeout: time.Millisecond*200}
+		cli = &http.Client{}
 	)
 	defer cansel()
 
