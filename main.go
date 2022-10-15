@@ -26,7 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	as := requestService.NewAdvertiserService(advertiserAddresses)
+	as := requestService.NewAdvertiserService(advertiserAddresses, &http.Client{})
 	rs := requestService.NewRequestService(as)
 	rc := requestController.NewController(rs)
 	requestController.HandlersRegister(rc)

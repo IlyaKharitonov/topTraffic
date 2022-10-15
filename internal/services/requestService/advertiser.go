@@ -17,10 +17,11 @@ import (
 
 type advertiserService struct {
 	addresses []string
+	cli *http.Client
 }
 
-func NewAdvertiserService(addresses []string)*advertiserService{
-	return &advertiserService{addresses: addresses}
+func NewAdvertiserService(addresses []string, cli *http.Client)*advertiserService{
+	return &advertiserService{addresses: addresses, cli: cli }
 }
 
 func (as *advertiserService)Request(ctx context.Context, request *entities.Request)(*entities.Response, error){
@@ -31,7 +32,6 @@ func (as *advertiserService)Request(ctx context.Context, request *entities.Reque
 		response = &entities.Response{ID: request.ID, Imp: []entities.Imp{}}
 		wg = &sync.WaitGroup{}
 		ctxWithTimeout, cansel = context.WithTimeout(ctx, time.Millisecond*200)
-		cli = &http.Client{}
 	)
 	defer cansel()
 
@@ -44,7 +44,7 @@ func (as *advertiserService)Request(ctx context.Context, request *entities.Reque
 
 	for _, a := range as.addresses{
 		wg.Add(1)
-		go execBidRequest(ctxWithTimeout, cli, a, reqBody, respCh, wg)
+		go execBidRequest(ctxWithTimeout, as.cli, a, reqBody, respCh, wg)
 	}
 	//после исполнения всех горутин закрываем канал
 	//чтобы спровоцировать выход из цикла в prepareResponse
